@@ -1,10 +1,10 @@
 "use client";
 import Navbar from "@/components/Navbar";
 import axios from "axios";
+import { format, parseISO } from "date-fns";
 // import Image from "next/image";
 import { useQuery } from "react-query";
 
-// https://api.openweathermap.org/data/2.5/forecast?q=pune&appid=f9178c1090e91c5f7e56f917cc6f7273&cnt=56
 
 interface Weather {
   id: number;
@@ -106,7 +106,8 @@ export default function Home() {
         <section>
           <div>
             <h2 className="flex gap-1 text-2xl items-end">
-              {/* <p> {format(parseISO(firstData?.dt_txt ??''),) } </p> */}
+              <p> {format(parseISO(firstData?.dt_txt ?? ''), "EEEE") } </p>
+              <p>({format(parseISO(firstData?.dt_txt ?? ''), "dd.MM.yyyy")}) </p>
             </h2>
           </div>
         </section>
