@@ -13,7 +13,7 @@ export interface WeatherDetailProps {
     airPressure: string;
     sunrise: string;
     sunset: string;
-}
+};
 
 export default function WeatherDetails(props: WeatherDetailProps) {
     const {
@@ -24,6 +24,8 @@ export default function WeatherDetails(props: WeatherDetailProps) {
         sunrise = "6.20",
         sunset = "18:48"
     } = props;
+
+
   return (
     <>
     <SingleWeatherDetail
