@@ -31,23 +31,23 @@ export default function ForecastWeatherDetail(
     description,
   } = props;
   return (
-    <Container className="bg-red-300/80 gap-4">
-      <section className="flex gap-4 items-center px-4">
-        <div className="flex flex-col">
+    <Container className="bg-red-300/80 gap-1 md:gap-4 h-full">
+      <section className="flex gap-1 md:gap-4 items-center px-2 md:px-4 bg-black h-full border-gray-900 rounded-xl">
+        <div className="flex flex-col items-center">
           <WeatherIcon iconName={weatherIcon2} />
           <p>{date}</p>
           <p className="text-sm">{day}</p>
         </div>
         {/* {left section} */}
-        <div className="flex flex-col px-4">
-          <span className="text-5xl">
+        <div className="flex flex-col px-2 md:px-4">
+          <span className="text-2xl md:text-5xl ">
             {convertKelvinToCelsius(temp ?? 0)}&deg;&uarr;
           </span>
           <p className="text-xs space-x-1 whitespace-nowrap">
-            <span>Feels feels_like</span>
+            <span>Feels like</span>
             <span>{convertKelvinToCelsius(feels_like ?? 0)}&deg;&uarr;</span>
           </p>
-          <p className="capitalize">{description}</p>
+          <p className="capitalize text-sm">{description}</p>
         </div>
       </section>
       {/* right */}
