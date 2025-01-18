@@ -5,7 +5,7 @@ import ForecastWeatherDetail from "@/components/ForcastWeatherDetail";
 import { useQuery } from "react-query";
 import { useAtom } from "jotai";
 import { loadingCityAtom, placeAtom } from "./atom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchWeatherData, WeatherData } from "@/lib/weather";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +26,7 @@ import {
 export default function Home() {
   const [place, setPlace] = useAtom(placeAtom);
   const [loadingCity] = useAtom(loadingCityAtom);
-
+  
   const { isLoading, error, data, refetch } = useQuery<WeatherData, Error>(
     ["weatherData", place],
     () => fetchWeatherData(place),
@@ -201,21 +201,50 @@ export default function Home() {
   );
 }
 
-function WeatherDetail({ title, value, description }: { title: string; value: string; description: string }) {
+function WeatherDetail({
+  title,
+  value,
+  description,
+}: {
+  title: string;
+  value: string;
+  description: string;
+}) {
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
   return (
     <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="cursor-help"
+      <Tooltip
+        open={isTooltipOpen}
+        onOpenChange={setIsTooltipOpen} // Sync tooltip open state
+      >
+        <TooltipTrigger
+          asChild
+          onMouseEnter={() => setIsTooltipOpen(true)} // Open on hover
+          onFocus={() => setIsTooltipOpen(true)} // Open on focus
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent unwanted propagation
+            setIsTooltipOpen((prev) => !prev); // Toggle tooltip on click
+          }}
+        >
+          <div
+            className="cursor-help"
             role="button"
             tabIndex={0}
-            onClick={(e) => e.stopPropagation()} // Prevent unwanted propagation
           >
             <p className="text-sm text-muted-foreground">{title}</p>
             <p className="text-lg font-semibold">{value}</p>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="top" align="center">
+        <TooltipContent
+          side="top"
+          align="center"
+          className="p-2 max-w-sm overflow-auto break-words rounded-md shadow-md"
+          style={{
+            maxHeight: "200px", // Limits the height
+          }}
+          onMouseLeave={() => setIsTooltipOpen(false)} // Close on mouse leave
+        >
           <p>{description}</p>
         </TooltipContent>
       </Tooltip>

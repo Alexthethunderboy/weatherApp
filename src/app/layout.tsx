@@ -6,7 +6,7 @@ import { Providers } from "@/components/Providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Modern Weather App",
+  title: "ThunderWeather",
   description: "A modern weather application with real-time updates and forecasts",
   keywords: ["weather", "forecast", "real-time", "modern"],
  

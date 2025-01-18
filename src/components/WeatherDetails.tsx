@@ -1,4 +1,5 @@
-import React from 'react';
+'use client'
+import React, { useState } from 'react';
 import { LuEye, LuDroplet, LuWind, LuGauge, LuSunrise, LuSunset } from "react-icons/lu";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -80,13 +81,21 @@ export default function WeatherDetails(props: WeatherDetailProps) {
 }
 
 function SingleWeatherDetail({ icon: Icon, label, value, description }: { icon: React.ElementType, label: string, value: string, description: string }) {
+     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   return (
     <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <Tooltip  open={isTooltipOpen}
+        onOpenChange={setIsTooltipOpen} // Sync tooltip open state
+      >
+        <TooltipTrigger asChild onMouseEnter={() => setIsTooltipOpen(true)} // Open on hover
+          onFocus={() => setIsTooltipOpen(true)} // Open on focus
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent unwanted propagation
+            setIsTooltipOpen((prev) => !prev); // Toggle tooltip on click
+          }}
+        >
           <Card className={cn("bg-white/10 backdrop-blur-lg cursor-help")}  role="button"
             tabIndex={0}
-            onClick={(e) => e.stopPropagation()} // Prevent unwanted propagation
          >
             <CardContent className="flex flex-col items-center p-4">
               <Icon className="text-2xl mb-2 text-blue-400" />
@@ -95,7 +104,14 @@ function SingleWeatherDetail({ icon: Icon, label, value, description }: { icon: 
             </CardContent>
           </Card>
         </TooltipTrigger>
-        <TooltipContent  side="top" align="center">
+        <TooltipContent side="top"
+          align="center"
+          className="p-2 max-w-sm overflow-auto break-words rounded-md shadow-md"
+          style={{
+            maxHeight: "200px", // Limits the height
+          }}
+          onMouseLeave={() => setIsTooltipOpen(false)} // Close on mouse leave
+       >
           <p>{description}</p>
         </TooltipContent>
       </Tooltip>
