@@ -75,7 +75,11 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="cursor-help">
+                  <div  className="cursor-help"
+            role="button"
+            tabIndex={0}
+            onClick={(e) => e.stopPropagation()} // Prevent unwanted propagation
+        >
                     <p className="text-sm">
                       H: {convertKelvinToCelsius(temp_max)}°C
                     </p>
@@ -84,7 +88,7 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
                     </p>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top" align="center" >
                   <p>The highest temperature expected is {convertKelvinToCelsius(temp_max)}°C, while the lowest is {convertKelvinToCelsius(temp_min)}°C. Plan your day accordingly!</p>
                 </TooltipContent>
               </Tooltip>

@@ -206,12 +206,16 @@ function WeatherDetail({ title, value, description }: { title: string; value: st
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="cursor-help">
+          <div className="cursor-help"
+            role="button"
+            tabIndex={0}
+            onClick={(e) => e.stopPropagation()} // Prevent unwanted propagation
+          >
             <p className="text-sm text-muted-foreground">{title}</p>
             <p className="text-lg font-semibold">{value}</p>
           </div>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent side="top" align="center">
           <p>{description}</p>
         </TooltipContent>
       </Tooltip>

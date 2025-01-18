@@ -84,7 +84,10 @@ function SingleWeatherDetail({ icon: Icon, label, value, description }: { icon: 
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Card className={cn("bg-white/10 backdrop-blur-lg cursor-help")}>
+          <Card className={cn("bg-white/10 backdrop-blur-lg cursor-help")}  role="button"
+            tabIndex={0}
+            onClick={(e) => e.stopPropagation()} // Prevent unwanted propagation
+         >
             <CardContent className="flex flex-col items-center p-4">
               <Icon className="text-2xl mb-2 text-blue-400" />
               <p className="text-xs font-semibold">{label}</p>
@@ -92,7 +95,7 @@ function SingleWeatherDetail({ icon: Icon, label, value, description }: { icon: 
             </CardContent>
           </Card>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent  side="top" align="center">
           <p>{description}</p>
         </TooltipContent>
       </Tooltip>
