@@ -1,27 +1,29 @@
-import { cn } from '@/utils/cn';
 import React from 'react'
-import { IoSearch } from 'react-icons/io5'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Search } from 'lucide-react'
 
 type Props = {
     className?: string;
     value: string;
-    onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
-    onSubmit: React.FormEventHandler<HTMLFormElement> | undefined;
- 
+    onChange: React.ChangeEventHandler<HTMLInputElement>;
+    onSubmit: React.FormEventHandler<HTMLFormElement>;
 };
 
 export default function SearchBox(props: Props) {
   return (
-    <form onSubmit={props.onSubmit} className={cn('flex relative items-center justify-center h-10',
-      props.className
-    )}>
-        <input type="text" 
-        value={props.value}
-        onChange={props.onChange}
-        placeholder='Search location...' className='px-4  py-2 w-[230px] border border-gray-300 rounded-1-md focus:outline-none focus:border-blue-500 h-full'/>
-        <button className='px-4 py-[9px] bg-blue-500 text-white rounded-r-md focus:outline-none hover:bg-blue h-full'>
-            <IoSearch className=''/>
-        </button>
-        </form>
+    <form onSubmit={props.onSubmit} className={`flex items-center space-x-2 ${props.className}`}>
+        <Input
+          type="text"
+          value={props.value}
+          onChange={props.onChange}
+          placeholder="Search location..."
+          className="flex-grow"
+        />
+        <Button type="submit" size="icon">
+          <Search className="h-4 w-4" />
+        </Button>
+    </form>
   )
 }
+

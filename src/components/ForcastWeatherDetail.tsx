@@ -1,13 +1,19 @@
-/** @format */
-
 import React from "react";
-import Container from "./Container";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import WeatherIcon from "./WeatherIcon";
 import WeatherDetails, { WeatherDetailProps } from "./WeatherDetails";
 import { convertKelvinToCelsius } from "@/utils/convertKelvinToCelsuis";
+import { cn } from "@/utils/cn";
+import { motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface ForecastWeatherDetailProps extends WeatherDetailProps {
-  weatherIcon2: string;
+  weatherIcon: string;
   date: string;
   day: string;
   temp: number;
@@ -17,11 +23,9 @@ export interface ForecastWeatherDetailProps extends WeatherDetailProps {
   description: string;
 }
 
-export default function ForecastWeatherDetail(
-  props: ForecastWeatherDetailProps
-) {
+export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps) {
   const {
-    weatherIcon2 = "02d",
+    weatherIcon = "02d",
     date = "19.09",
     day = "Tuesday",
     temp,
@@ -29,31 +33,69 @@ export default function ForecastWeatherDetail(
     temp_min,
     temp_max,
     description,
+    ...weatherDetails
   } = props;
+
   return (
-    <Container className="bg-red-300/80 gap-1 md:gap-4 h-full">
-      <section className="flex gap-1 md:gap-4 items-center px-2 md:px-4 bg-black h-full border-gray-900 rounded-xl">
-        <div className="flex flex-col items-center">
-          <WeatherIcon iconName={weatherIcon2} />
-          <p>{date}</p>
-          <p className="text-sm">{day}</p>
+    <Card className={cn("bg-white/10 backdrop-blur-lg ")}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">
+          {day}, {date}
+        </CardTitle>
+        <motion.div
+          initial={{ rotate: -10, opacity: 0 }}
+          animate={{ rotate: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <WeatherIcon iconName={weatherIcon} className="h-8 w-8" />
+        </motion.div>
+      </CardHeader>
+      <CardContent>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="grid grid-cols-2 gap-4"
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="cursor-help">
+                  <p className="text-2xl font-bold">{convertKelvinToCelsius(temp)}°C</p>
+                  <p className="text-xs  ">Feels like {convertKelvinToCelsius(feels_like)}°C</p>
+                  <p className="text-sm mt-1 capitalize">{description}</p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The actual temperature is {convertKelvinToCelsius(temp)}°C, but it feels like {convertKelvinToCelsius(feels_like)}°C due to factors like humidity and wind.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div className="text-right">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="cursor-help">
+                    <p className="text-sm">
+                      H: {convertKelvinToCelsius(temp_max)}°C
+                    </p>
+                    <p className="text-sm">
+                      L: {convertKelvinToCelsius(temp_min)}°C
+                    </p>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>The highest temperature expected is {convertKelvinToCelsius(temp_max)}°C, while the lowest is {convertKelvinToCelsius(temp_min)}°C. Plan your day accordingly!</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </motion.div>
+        <div className="mt-4">
+          <WeatherDetails {...weatherDetails} />
         </div>
-        {/* {left section} */}
-        <div className="flex flex-col px-2 md:px-4">
-          <span className="text-2xl md:text-5xl ">
-            {convertKelvinToCelsius(temp ?? 0)}&deg;&uarr;
-          </span>
-          <p className="text-xs space-x-1 whitespace-nowrap">
-            <span>Feels like</span>
-            <span>{convertKelvinToCelsius(feels_like ?? 0)}&deg;&uarr;</span>
-          </p>
-          <p className="capitalize text-sm">{description}</p>
-        </div>
-      </section>
-      {/* right */}
-      <section className="overflow-x-auto flex justify-between gap-4 w-full pr-10">
-        <WeatherDetails {...props} />
-      </section>
-    </Container>
+      </CardContent>
+    </Card>
   );
 }
+
