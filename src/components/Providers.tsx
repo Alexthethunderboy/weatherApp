@@ -1,15 +1,18 @@
-"use client";
+"use client"
 
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ThemeProvider } from "next-themes";
+import { QueryClient, QueryClientProvider } from "react-query"
+import { ThemeProvider } from "next-themes"
+import type { ReactNode } from "react"
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </ThemeProvider>
-  );
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {children}
+      </ThemeProvider>
+    </QueryClientProvider>
+  )
 }
 

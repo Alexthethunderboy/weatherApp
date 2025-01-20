@@ -1,65 +1,52 @@
-"use client";
+"use client"
 
-import Navbar from "@/components/Navbar";
-import ForecastWeatherDetail from "@/components/ForcastWeatherDetail";
-import { useQuery } from "react-query";
-import { useAtom } from "jotai";
-import { loadingCityAtom, placeAtom } from "./atom";
-import { useEffect, useState } from "react";
-import { fetchWeatherData, WeatherData } from "@/lib/weather";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import WeatherIcon from "@/components/WeatherIcon";
-import { convertKelvinToCelsius } from "@/utils/convertKelvinToCelsuis";
-import { format, fromUnixTime, parseISO } from "date-fns";
-import { metersToKilometers } from "@/utils/metersToKilometers";
-import { convertWindSpeed } from "@/utils/convertWindSpeed";
-import { cn } from "@/utils/cn";
-import { motion } from "framer-motion";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import React, { useState, useEffect } from "react"
+import Navbar from "@/components/Navbar"
+import ForecastWeatherDetail from "@/components/ForcastWeatherDetail"
+import { useQuery } from "react-query"
+import { useAtom } from "jotai"
+import { loadingCityAtom, placeAtom } from "./atom"
+import { fetchWeatherData } from "@/lib/weather"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import WeatherIcon from "@/components/WeatherIcon"
+import { convertKelvinToCelsius } from "@/utils/convertKelvinToCelsuis"
+import { format, fromUnixTime, parseISO } from "date-fns"
+import { metersToKilometers } from "@/utils/metersToKilometers"
+import { convertWindSpeed } from "@/utils/convertWindSpeed"
+import { cn } from "@/utils/cn"
+import { motion } from "framer-motion"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import WeatherAnimations from "@/components/WeatherAnimations"
+import WeatherNews from "@/components/WeatherNews"
+import DailyWeatherFact from "@/components/DailyWeatherFacts"
 
 export default function Home() {
-  const [place, setPlace] = useAtom(placeAtom);
-  const [loadingCity] = useAtom(loadingCityAtom);
-  
-  const { isLoading, error, data, refetch } = useQuery<WeatherData, Error>(
-    ["weatherData", place],
-    () => fetchWeatherData(place),
-    {
-      refetchOnWindowFocus: false,
-      refetchInterval: 1000 * 60 * 30, // Refetch every 30 minutes
-    }
-  );
+  const [place, setPlace] = useAtom(placeAtom)
+  const [loadingCity] = useAtom(loadingCityAtom)
+
+  const { isLoading, error, data, refetch } = useQuery(["weatherData", place], () => fetchWeatherData(place), {
+    refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 30, // Refetch every 30 minutes
+  })
 
   useEffect(() => {
-    refetch();
-  }, [place, refetch]);
+    refetch()
+  }, [place, refetch])
 
-  const firstData = data?.list[0];
+  if (isLoading) return <WeatherSkeleton />
+  if (error) return <div>Error: {(error as Error).message}</div>
 
-  if (isLoading) return <WeatherSkeleton />;
-  if (error) return <div>Error: {error.message}</div>;
+  const firstData = data?.list[0]
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar location={data?.city.name} />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-        >
-          <Card className={cn("col-span-2 overflow-hidden")}>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <Card className={cn("col-span-full lg:col-span-2")}>
             <CardHeader>
-              <CardTitle className="text-2xl">
-                Current Weather in {data?.city.name}
-              </CardTitle>
+              <CardTitle>Current Weather in {data?.city.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
@@ -72,9 +59,7 @@ export default function Home() {
                   >
                     {convertKelvinToCelsius(firstData?.main.temp ?? 0)}°C
                   </motion.p>
-                  <p className="text-xl capitalize">
-                    {firstData?.weather[0].description}
-                  </p>
+                  <p className="text-xl capitalize">{firstData?.weather[0].description}</p>
                   <p className="text-sm text-muted-foreground">
                     {format(parseISO(firstData?.dt_txt ?? new Date().toISOString()), "EEEE, d MMMM yyyy")}
                   </p>
@@ -82,16 +67,7 @@ export default function Home() {
                     {format(parseISO(firstData?.dt_txt ?? new Date().toISOString()), "HH:mm")}
                   </p>
                 </div>
-                <motion.div
-                  initial={{ rotate: -10, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <WeatherIcon
-                    iconName={firstData?.weather[0].icon ?? ""}
-                    className="w-24 h-24"
-                  />
-                </motion.div>
+                <WeatherAnimations weatherCode={firstData?.weather[0].id ?? 0} />
               </div>
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <WeatherDetail
@@ -127,129 +103,70 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="col-span-full lg:col-span-1">
             <CardHeader>
-              <CardTitle>7-Day Forecast</CardTitle>
+              <CardTitle>Weather News</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {data?.list
-                  .filter((_, index) => index % 8 === 0)
-                  .map((forecast, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="flex justify-between items-center"
-                    >
-                      <div>
-                        <p className="font-semibold">
-                          {format(parseISO(forecast.dt_txt), "EEEE")}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {format(parseISO(forecast.dt_txt), "MMM d")}
-                        </p>
-                      </div>
-                      <div className="flex items-center">
-                        <WeatherIcon
-                          iconName={forecast.weather[0].icon}
-                          className="w-10 h-10 mr-2"
-                        />
-                        <p className="text-lg font-semibold">
-                          {convertKelvinToCelsius(forecast.main.temp)}°C
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
-              </div>
+              <WeatherNews />
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
+        <DailyWeatherFact className="mt-8" />
         <section className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Detailed Forecast</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {data?.list.filter((_, index) => index % 8 === 0).slice(0, 5).map((forecast, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <ForecastWeatherDetail
-                  weatherIcon={forecast.weather[0].icon}
-                  date={format(parseISO(forecast.dt_txt), "MMM d")}
-                  day={format(parseISO(forecast.dt_txt), "EEEE")}
-                  temp={forecast.main.temp}
-                  feels_like={forecast.main.feels_like}
-                  temp_min={forecast.main.temp_min}
-                  temp_max={forecast.main.temp_max}
-                  description={forecast.weather[0].description}
-                  visibility={metersToKilometers(forecast.visibility)}
-                  humidity={`${forecast.main.humidity}%`}
-                  windSpeed={convertWindSpeed(forecast.wind.speed)}
-                  airPressure={`${forecast.main.pressure} hPa`}
-                  sunrise={format(fromUnixTime(data.city.sunrise), "HH:mm")}
-                  sunset={format(fromUnixTime(data.city.sunset), "HH:mm")}
-                />
-              </motion.div>
-            ))}
+            {data?.list
+              .filter((_, index) => index % 8 === 0)
+              .slice(0, 5)
+              .map((forecast, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <ForecastWeatherDetail
+                    weatherIcon={forecast.weather[0].icon}
+                    date={format(parseISO(forecast.dt_txt), "MMM d")}
+                    day={format(parseISO(forecast.dt_txt), "EEEE")}
+                    temp={forecast.main.temp}
+                    feels_like={forecast.main.feels_like}
+                    temp_min={forecast.main.temp_min}
+                    temp_max={forecast.main.temp_max}
+                    description={forecast.weather[0].description}
+                    visibility={metersToKilometers(forecast.visibility)}
+                    humidity={`${forecast.main.humidity}%`}
+                    windSpeed={convertWindSpeed(forecast.wind.speed)}
+                    airPressure={`${forecast.main.pressure} hPa`}
+                    sunrise={format(fromUnixTime(data.city.sunrise), "HH:mm")}
+                    sunset={format(fromUnixTime(data.city.sunset), "HH:mm")}
+                  />
+                </motion.div>
+              ))}
           </div>
         </section>
       </main>
     </div>
-  );
+  )
 }
 
-function WeatherDetail({
-  title,
-  value,
-  description,
-}: {
-  title: string;
-  value: string;
-  description: string;
-}) {
-  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-
+function WeatherDetail({ title, value, description }: { title: string; value: string; description: string }) {
   return (
     <TooltipProvider>
-      <Tooltip
-        open={isTooltipOpen}
-        onOpenChange={setIsTooltipOpen} // Sync tooltip open state
-      >
-        <TooltipTrigger
-          asChild
-          onMouseEnter={() => setIsTooltipOpen(true)} // Open on hover
-          onFocus={() => setIsTooltipOpen(true)} // Open on focus
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent unwanted propagation
-            setIsTooltipOpen((prev) => !prev); // Toggle tooltip on click
-          }}
-        >
-          <div
-            className="cursor-help"
-            role="button"
-            tabIndex={0}
-          >
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-help">
             <p className="text-sm text-muted-foreground">{title}</p>
             <p className="text-lg font-semibold">{value}</p>
           </div>
         </TooltipTrigger>
-        <TooltipContent
-          side="top"
-          align="center"
-          className="p-2 max-w-sm overflow-auto break-words rounded-md shadow-md"
-          style={{
-            maxHeight: "200px", // Limits the height
-          }}
-          onMouseLeave={() => setIsTooltipOpen(false)} // Close on mouse leave
-        >
+        <TooltipContent>
           <p>{description}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }
 
 function WeatherSkeleton() {
@@ -288,7 +205,7 @@ function WeatherSkeleton() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[...Array(7)].map((_, i) => (
+                {[...Array(3)].map((_, i) => (
                   <div key={i} className="flex justify-between items-center">
                     <div>
                       <Skeleton className="h-6 w-24 mb-1" />
@@ -326,6 +243,6 @@ function WeatherSkeleton() {
         </section>
       </main>
     </div>
-  );
+  )
 }
 

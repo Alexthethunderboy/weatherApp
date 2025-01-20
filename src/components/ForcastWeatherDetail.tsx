@@ -37,10 +37,10 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
     ...weatherDetails
   } = props;
 
-   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   return (
-    <Card className={cn("bg-white/10 backdrop-blur-lg ")}>
+    <Card className={cn("bg-white/10 backdrop-blur-lg")}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
           {day}, {date}
@@ -62,13 +62,13 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
         >
           <TooltipProvider>
             <Tooltip
-            open={isTooltipOpen}
-            onOpenChange={setIsTooltipOpen} // Sync tooltip open state
+              open={isTooltipOpen}
+              onOpenChange={setIsTooltipOpen}
             >
               <TooltipTrigger asChild>
                 <div className="cursor-help">
                   <p className="text-2xl font-bold">{convertKelvinToCelsius(temp)}°C</p>
-                  <p className="text-xs  ">Feels like {convertKelvinToCelsius(feels_like)}°C</p>
+                  <p className="text-xs">Feels like {convertKelvinToCelsius(feels_like)}°C</p>
                   <p className="text-sm mt-1 capitalize">{description}</p>
                 </div>
               </TooltipTrigger>
@@ -80,16 +80,19 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
           <div className="text-right">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild onMouseEnter={() => setIsTooltipOpen(true)} // Open on hover
-          onFocus={() => setIsTooltipOpen(true)} // Open on focus
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent unwanted propagation
-            setIsTooltipOpen((prev) => !prev); // Toggle tooltip on click
-          }}>
-                  <div  className="cursor-help"
-            role="button"
-            tabIndex={0}
-          >
+                <TooltipTrigger asChild 
+                  onMouseEnter={() => setIsTooltipOpen(true)}
+                  onFocus={() => setIsTooltipOpen(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsTooltipOpen((prev) => !prev);
+                  }}
+                >
+                  <div  
+                    className="cursor-help"
+                    role="button"
+                    tabIndex={0}
+                  >
                     <p className="text-sm">
                       H: {convertKelvinToCelsius(temp_max)}°C
                     </p>
@@ -98,14 +101,15 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
                     </p>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top"
-          align="center"
-          className="p-2 max-w-sm overflow-auto break-words rounded-md shadow-md"
-          style={{
-            maxHeight: "200px", // Limits the height
-          }}
-          onMouseLeave={() => setIsTooltipOpen(false)} // Close on mouse leave
-        >
+                <TooltipContent 
+                  side="top"
+                  align="center"
+                  className="p-2 max-w-sm overflow-auto break-words rounded-md shadow-md"
+                  style={{
+                    maxHeight: "200px",
+                  }}
+                  onMouseLeave={() => setIsTooltipOpen(false)}
+                >
                   <p>The highest temperature expected is {convertKelvinToCelsius(temp_max)}°C, while the lowest is {convertKelvinToCelsius(temp_min)}°C. Plan your day accordingly!</p>
                 </TooltipContent>
               </Tooltip>
