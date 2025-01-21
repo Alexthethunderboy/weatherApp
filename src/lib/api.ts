@@ -39,4 +39,3 @@ export async function fetchWeatherByCoords(lat: number, lon: number) {
     throw error;
   }
 }
-
