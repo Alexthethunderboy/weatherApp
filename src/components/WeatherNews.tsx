@@ -29,9 +29,11 @@ const WeatherNews: React.FC<WeatherNewsProps> = ({ location }) => {
     setError(null);
     try {
       const query = `weather+${encodeURIComponent(location)}`;
+      console.log("Fetching news with query:", query); // Debugging log
       const response = await axios.get(
         `https://newsapi.org/v2/everything?q=${query}&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}&pageSize=20&page=${page}&sortBy=popularity`
       );
+      console.log("API Response:", response); // Debugging log
 
       if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
