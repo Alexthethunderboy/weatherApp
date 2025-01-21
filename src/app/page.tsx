@@ -67,7 +67,7 @@ export default function Home() {
                     {format(parseISO(firstData?.dt_txt ?? new Date().toISOString()), "HH:mm")}
                   </p>
                 </div>
-                <WeatherAnimations weatherCode={firstData?.weather[0].id ?? 0} />
+                <WeatherAnimations weatherCode={firstData?.weather[0].id ?? 800} />
               </div>
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <WeatherDetail
@@ -103,16 +103,13 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-          <Card className="col-span-full lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Weather News</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <WeatherNews />
-            </CardContent>
+          <Card className="col-span-full lg:col-span-1 overflow-hidden h-[400px]">
+            <WeatherNews location={data?.city.name ?? ""} />
           </Card>
+          {/* <Card className="col-span-full">
+            <DailyWeatherFact />
+          </Card> */}
         </div>
-        <DailyWeatherFact className="mt-8" />
         <section className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Detailed Forecast</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
